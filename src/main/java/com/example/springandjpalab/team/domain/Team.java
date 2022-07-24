@@ -27,12 +27,16 @@ public class Team {
 
     private String teamName;
 
-//    @OneToMany(fetch = FetchType.LAZY, mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true)
-//    private List<Member> memberList = new ArrayList<>();
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Member> memberList = new ArrayList<>();
 
     public Team(Long teamNum, String teamName, List<Member> memberList) {
         this.teamNum = teamNum;
         this.teamName = teamName;
 //        this.memberList = memberList;
+    }
+
+    public void addMember(Member member) {
+        this.memberList.add(member);
     }
 }
