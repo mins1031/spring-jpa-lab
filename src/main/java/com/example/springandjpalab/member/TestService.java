@@ -39,4 +39,11 @@ public class TestService {
         System.out.println(team.getMemberList().getClass());
         team.addMember(member);
     }
+
+    @Transactional(propagation = Propagation.NESTED)
+    public void testNested(Team team) {
+        Member member = new Member(null, "member", "email", 20);
+        memberRepository.save(member);
+        team.addMember(member);
+    }
 }
