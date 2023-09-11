@@ -40,4 +40,3 @@ spring:
       max-connections: 8192 # 수립가능한 connection의 총 개수
       accept-count: 100 # 작업큐의 사이즈
       connection-timeout: 20000 # timeout 판단 기준 시간, 20초
-    port: 8080 # 서버를 띄울 포트번호
