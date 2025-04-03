@@ -1,7 +1,7 @@
 package com.example.springandjpalab;
 
-import com.example.springandjpalab.member.domain.Member;
-import com.example.springandjpalab.member.repository.MemberRepository;
+import com.example.springandjpalab.simple.member.domain.Member;
+import com.example.springandjpalab.simple.member.repository.MemberRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,13 +1,11 @@
 package com.example.springandjpalab;
 
-import com.example.springandjpalab.callback.CallBackBean1;
-import com.example.springandjpalab.callback.CallBackBean2;
+import com.example.springandjpalab.simple.callback.CallBackBean1;
+import com.example.springandjpalab.simple.callback.CallBackBean2;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest
