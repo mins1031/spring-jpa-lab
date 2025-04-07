@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -22,19 +24,29 @@ public class OrderByArrivalService {
     @Transactional
     public OrderByArrivalResponse produceArrivalEventCoupon(Long userId, boolean agree) {
         if (Objects.isNull(userId) || !agree) {
-            throw new IllegalArgumentException("선착순 요청 파라미터가 부적절 합니다");
+            return OrderByArrivalResponse.error(userId, "선착순 요청 파라미터가 부적절 합니다");
         }
 
         if (orderByArrivalEvent.isOutOfAmount()) {
-            throw new IllegalArgumentException("쿠폰이 모두 소진 되었습니다");
+            return OrderByArrivalResponse.error(userId, "쿠폰이 모두 소진 되었습니다");
         }
         long orderByArrivalEventCouponId = 135L;
 
         UserEntity userEntity = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원 입니다."));
+        Set<UserCouponEntity> existUserCoupons = userCouponRepository.findByUserId(userEntity.getId());
+
+        Optional<UserCouponEntity> first = existUserCoupons.stream()
+                .filter(userCouponEntity -> orderByArrivalEventCouponId == userCouponEntity.getCouponId())
+                .findFirst();
+        if (first.isPresent()) {
+            return OrderByArrivalResponse.error(userId, "선착순 쿠폰은 인당 한개씩 입니다");
+        }
+
         userCouponRepository.save(
                 new UserCouponEntity(userEntity.getId(), orderByArrivalEventCouponId)
         );
+        orderByArrivalEvent.issueCoupon();
 
-        return new OrderByArrivalResponse(userEntity.getId(), orderByArrivalEventCouponId);
+        return OrderByArrivalResponse.of(userEntity.getId(), orderByArrivalEventCouponId);
     }
 }

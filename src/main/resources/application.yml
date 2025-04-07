@@ -43,9 +43,7 @@ spring:
 ---
 
 spring:
-  config:
-    activate:
-      on-profile: local
+  profiles:  local
   servlet:
     multipart:
       max-file-size: 50MB
@@ -59,7 +57,7 @@ spring:
       enabled: true
       appender: com.p6spy.engine.spy.appender.Slf4JLogger
   jpa:
-    database-platform: org.hibernate.dialect.MySQLDialect
+    database-platform: org.hibernate.dialect.MySQL8Dialect
     hibernate:
       ddl-auto: update
       use_sql_comments : false
@@ -67,7 +65,7 @@ spring:
     properties:
       hibernate:
         format_sql : true
-        dialect: org.hibernate.dialect.MySQLDialect
+        dialect: org.hibernate.dialect.MySQL8Dialect
         enable_lazy_load_no_trans: false
         default_batch_fetch_size: 100
     open-in-view: false
