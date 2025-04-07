@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.locks.ReentrantLock;
 
 @Service
 @RequiredArgsConstructor
@@ -21,14 +22,12 @@ public class OrderByArrivalService {
     private final UserCouponRepository userCouponRepository;
     private final OrderByArrivalEvent orderByArrivalEvent;
 
+    private final ReentrantLock lock = new ReentrantLock(true);
+
     @Transactional
     public OrderByArrivalResponse produceArrivalEventCoupon(Long userId, boolean agree) {
         if (Objects.isNull(userId) || !agree) {
             return OrderByArrivalResponse.error(userId, "선착순 요청 파라미터가 부적절 합니다");
-        }
-
-        if (orderByArrivalEvent.isOutOfAmount()) {
-            return OrderByArrivalResponse.error(userId, "쿠폰이 모두 소진 되었습니다");
         }
         long orderByArrivalEventCouponId = 135L;
 
@@ -42,10 +41,24 @@ public class OrderByArrivalService {
             return OrderByArrivalResponse.error(userId, "선착순 쿠폰은 인당 한개씩 입니다");
         }
 
-        userCouponRepository.save(
-                new UserCouponEntity(userEntity.getId(), orderByArrivalEventCouponId)
-        );
-        orderByArrivalEvent.issueCoupon();
+//        userCouponRepository.save(
+//                new UserCouponEntity(userEntity.getId(), orderByArrivalEventCouponId)
+//        );
+//        orderByArrivalEvent.issueCoupon();
+
+        lock.lock();
+        if (orderByArrivalEvent.isOutOfAmount()) {
+            lock.unlock();
+            return OrderByArrivalResponse.error(userId, "쿠폰이 모두 소진 되었습니다");
+        }
+        try {
+            userCouponRepository.save(
+                    new UserCouponEntity(userEntity.getId(), orderByArrivalEventCouponId)
+            );
+            orderByArrivalEvent.issueCoupon();
+        } finally {
+            lock.unlock();
+        }
 
         return OrderByArrivalResponse.of(userEntity.getId(), orderByArrivalEventCouponId);
     }

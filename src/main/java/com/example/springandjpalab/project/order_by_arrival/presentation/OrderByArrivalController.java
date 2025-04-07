@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class OrderByArrivalController {
 
     //선착순 시스템 구현
-    // 선착순 쿠폰발급, 선착순 예매리
+    // 선착순 쿠폰발급
     // 선착순 1000명에서 30% 쿠폰 발급 이벤트 구현
     private final OrderByArrivalService orderByArrivalService;
 
