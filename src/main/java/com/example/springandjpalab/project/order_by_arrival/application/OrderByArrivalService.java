@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -41,11 +42,6 @@ public class OrderByArrivalService {
             return OrderByArrivalResponse.error(userId, "선착순 쿠폰은 인당 한개씩 입니다");
         }
 
-//        userCouponRepository.save(
-//                new UserCouponEntity(userEntity.getId(), orderByArrivalEventCouponId)
-//        );
-//        orderByArrivalEvent.issueCoupon();
-
         lock.lock();
         if (orderByArrivalEvent.isOutOfAmount()) {
             lock.unlock();
@@ -55,11 +51,18 @@ public class OrderByArrivalService {
             userCouponRepository.save(
                     new UserCouponEntity(userEntity.getId(), orderByArrivalEventCouponId)
             );
-            orderByArrivalEvent.issueCoupon();
+            orderByArrivalEvent.issueCoupon(userEntity.getId());
+        } catch (Exception e) {
+            // 이걸 issue에서 잡아서 처리해주느냐 or lock의 범위를 중복발급 검증을 위한 쿼리 + 검사로직까지 처리할것이냐. -> 속도 및 tps 보고 결정해야될것 같다.
+            throw new IllegalArgumentException("userID : " + userId +  "요청 쏠림으로 인한 동일유저 요청을 배제하거나, 쿠폰이 소진되었습니다");
         } finally {
             lock.unlock();
         }
 
         return OrderByArrivalResponse.of(userEntity.getId(), orderByArrivalEventCouponId);
+    }
+
+    public Set<Long> getIssuedUserIds() {
+        return this.orderByArrivalEvent.getIssuedUserIds();
     }
 }

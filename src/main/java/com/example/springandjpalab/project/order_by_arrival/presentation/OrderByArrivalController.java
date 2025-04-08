@@ -13,6 +13,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+import java.util.Set;
+
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -34,6 +37,11 @@ public class OrderByArrivalController {
     public String testHello(@RequestParam(value = "count") int count) {
         log.info("count = {}", count);
         return "hello" + count;
+    }
+
+    @GetMapping(value = "/api/coupon/v1/userIds")
+    public Set<Long> getIssuedUserIds() {
+        return orderByArrivalService.getIssuedUserIds();
     }
 
 }
